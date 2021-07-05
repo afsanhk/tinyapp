@@ -32,12 +32,11 @@ app.get("/urls", (req, res) => {
   res.render("urls_index", templateVars);
 });
 
-
-
 // Create new urls
 app.get("/urls_new", (req,res) => {
   res.render("urls_new");
 });
+
 
 // Handles posts to /urls (for example: from /urls_new)
 app.post("/urls", (req, res) => {
@@ -49,6 +48,13 @@ app.post("/urls", (req, res) => {
 
   res.redirect(`/urls/${newShortURL}`); // Redirects to /urls with the new string.
 });
+
+// Deletes urls from the form on /urls
+app.post("/urls/:shortURL/delete", (req,res) => {
+  let shortURL = req.params.shortURL;
+  delete urlDatabase[shortURL];
+  res.redirect('/urls');
+})
 
 // Shows corresponding long URL --> Make sure this is after urls_new.
 app.get("/urls/:shortURL", (req,res) => {
