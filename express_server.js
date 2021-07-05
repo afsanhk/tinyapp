@@ -9,28 +9,39 @@ const urlDatabase = {
   "9sm5xK": "http://www.google.com"
 };
 
+// Home Page
 app.get("/", (req, res) => {
   res.send("Hello!");
 });
 
+// Lists urls
 app.get("/urls", (req, res) => {
   const templateVars = { urls: urlDatabase };
   res.render("urls_index", templateVars);
 });
 
+// Create new urls
+app.get("/urls_new", (req,res) => {
+  res.render("urls_new");
+})
+
+// Shows corresponding long URL --> Make sure this is after urls_new.
 app.get("/urls/:shortURL", (req,res) => {
   const templateVars = { shortURL : req.params.shortURL, longURL: urlDatabase[req.params.shortURL]};
   res.render('urls_show', templateVars);
 })
 
-app.listen(PORT, () => {
-  console.log(`Example app listening on port ${PORT}!`);
-});
-
+// URLS JSON String
 app.get("/urls.json", (req, res) => {
   res.json(urlDatabase);
 });
 
+app.listen(PORT, () => {
+  console.log(`Example app listening on port ${PORT}!`);
+});
+
+// Example path /hello to show that HTML can be entered.
 app.get("/hello", (req, res) => {
   res.send("<html><body>Hello <b>World</b></body></html>\n");
 });
+
