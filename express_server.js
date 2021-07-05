@@ -6,22 +6,20 @@ app.use(bodyParser.urlencoded({extended: true}));
 
 app.set("view engine", "ejs");
 
+// Generates random 6 length string --> Should assign to a variable.
 function generateRandomString() {
-  let characters = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
+  let characters = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
   let randomString = '';
   for (let i = 0; i < 6; i++) {
-    randomString += characters[Math.floor(Math.random()*characters.length)]
-  } 
+    randomString += characters[Math.floor(Math.random() * characters.length)];
+  }
   return randomString;
 }
-
 
 const urlDatabase = {
   "b2xVn2": "http://www.lighthouselabs.ca",
   "9sm5xK": "http://www.google.com"
 };
-
-
 
 // Home Page
 app.get("/", (req, res) => {
@@ -43,13 +41,13 @@ app.post("/urls", (req, res) => {
 // Create new urls
 app.get("/urls_new", (req,res) => {
   res.render("urls_new");
-})
+});
 
 // Shows corresponding long URL --> Make sure this is after urls_new.
 app.get("/urls/:shortURL", (req,res) => {
   const templateVars = { shortURL : req.params.shortURL, longURL: urlDatabase[req.params.shortURL]};
   res.render('urls_show', templateVars);
-})
+});
 
 // URLS JSON String
 app.get("/urls.json", (req, res) => {
