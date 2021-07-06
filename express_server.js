@@ -37,9 +37,9 @@ app.get("/", (req, res) => {
 
 // Lists urls
 app.get("/urls", (req, res) => {
-  const templateVars = { 
-    urls: urlDatabase, 
-    username: req.cookies["username"] 
+  const templateVars = {
+    urls: urlDatabase,
+    username: req.cookies["username"]
   };
 
   res.render("urls_index", templateVars);
@@ -47,15 +47,15 @@ app.get("/urls", (req, res) => {
 
 // Create new urls
 app.get("/urls_new", (req,res) => {
-  const templateVars = { username: req.cookies["username"] }
+  const templateVars = { username: req.cookies["username"] };
   res.render("urls_new", templateVars);
 });
 
 // Shows corresponding long URL --> Make sure this is after urls_new.
 app.get("/urls/:shortURL", (req,res) => {
-  const templateVars = { 
-    shortURL : req.params.shortURL, 
-    longURL : urlDatabase[req.params.shortURL], 
+  const templateVars = {
+    shortURL : req.params.shortURL,
+    longURL : urlDatabase[req.params.shortURL],
     username: req.cookies["username"]
   };
   res.render('urls_show', templateVars);
