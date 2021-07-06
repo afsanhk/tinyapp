@@ -3,31 +3,25 @@
 <head>
   <!-- Bootstrap CSS -->
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
-  <title>URL - TinyApp Example</title>
+  <title>URL - TinyApp Example - Registration Page</title>
 </head>
 
 <body>
   <%- include('partials/_header'); %>
-  <div class="card text-center">
-      <div class="card-header"></div>
-      <div class="card-body">
-        <h5 class="card-title">TinyURL for: <%= longURL %></h5>
-        <p class="card-text">Short URL: <a href="/u/<%= shortURL %>"><%= shortURL %></a></p>
+  <main style = "margin: 1em">
+    <form action="/register" method="POST">
+      <div class="mb-3">
+        <label for="email" class="form-label">Enter Email address</label>
+        <input class="form-control" type="email" name ="email" id="email" placeholder="example@domain.com" style="width: 300px">
       </div>
-
-      <div class="card-footer text-muted text-center" >
-        <!-- Button to update the long URL link -->
-          <h3 class = "card-title"> Edit </h3>
-          <form class="form-inline" action="/urls/<%= shortURL %>" method="POST">
-            <div class = "form-group mb3" style = "width: 350px; margin:auto"> 
-              <label class = "card-text" for="newLongURL" >New URL:</label>
-              <input class="form-control" type="text" name="newLongURL" placeholder="http://" style="width:  200px">
-              <button type="submit" class="btn btn-primary" >Submit</button>
-            </div>
-          </form>
+      <div class="mb-3">
+        <label for="password" class="form-label">Enter Password</label>
+        <input class="form-control" type="password" name="password" id="password" style="width: 300px">
       </div>
-
-  </div>
+      <button type="submit" class="btn btn-primary">Submit</button>
+    </form>
+  </main>
+  
 
   <!-- Bootstrap JS -->
   <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>

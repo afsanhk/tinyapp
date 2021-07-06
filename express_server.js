@@ -51,6 +51,12 @@ app.get("/urls_new", (req,res) => {
   res.render("urls_new", templateVars);
 });
 
+// Regustration page
+app.get("/register", (req,res) => {
+  const templateVars = { username: req.cookies["username"] };
+  res.render("registration", templateVars);
+})
+
 // Shows corresponding long URL --> Make sure this is after urls_new.
 app.get("/urls/:shortURL", (req,res) => {
   const templateVars = {
@@ -69,6 +75,11 @@ app.get("/u/:shortURL", (req, res) => {
 
 // 404 Error
 app.get("*", (req,res) => {
+  const templateVars = { username: req.cookies["username"] };
+  res.render('404', templateVars);
+});
+
+app.post("*", (req,res) => {
   const templateVars = { username: req.cookies["username"] };
   res.render('404', templateVars);
 });
