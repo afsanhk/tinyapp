@@ -20,9 +20,24 @@ const generateRandomString = function() {
   return randomString; // Edge case: Improbably but this doesn't account for if string has already been generated for another URL.
 };
 
+// URL Database
 const urlDatabase = {
   "b2xVn2": "http://www.lighthouselabs.ca",
   "9sm5xK": "http://www.google.com"
+};
+
+// Users Database
+const users = {
+  'userRandomID' : {
+    id: 'userRandomID',
+    email: 'user@example.com',
+    password: 'purple-monkey-dinosaur'
+  },
+  "user2RandomID": {
+    id: "user2RandomID",
+    email: "user2@example.com",
+    password: "dishwasher-funk"
+  }
 };
 
 app.listen(PORT, () => {
@@ -37,33 +52,36 @@ app.get("/", (req, res) => {
 
 // Lists urls
 app.get("/urls", (req, res) => {
+ 
   const templateVars = {
     urls: urlDatabase,
-    username: req.cookies["username"]
+    user: users[req.cookies['user_id']]
   };
-
+  
   res.render("urls_index", templateVars);
 });
 
 // Create new urls
 app.get("/urls_new", (req,res) => {
-  const templateVars = { username: req.cookies["username"] };
+  const templateVars = { user: users[req.cookies['user_id']] };
+  console.log(templateVars);
   res.render("urls_new", templateVars);
 });
 
 // Regustration page
 app.get("/register", (req,res) => {
-  const templateVars = { username: req.cookies["username"] };
+  const templateVars = { user: users[req.cookies['user_id']] };
   res.render("registration", templateVars);
-})
+});
 
 // Shows corresponding long URL --> Make sure this is after urls_new.
 app.get("/urls/:shortURL", (req,res) => {
   const templateVars = {
     shortURL : req.params.shortURL,
     longURL : urlDatabase[req.params.shortURL],
-    username: req.cookies["username"]
+    user: users[req.cookies['user_id']]
   };
+
   res.render('urls_show', templateVars);
 });
 
@@ -73,24 +91,10 @@ app.get("/u/:shortURL", (req, res) => {
   res.redirect(longURL);
 });
 
-// 404 Error
-app.get("*", (req,res) => {
-  const templateVars = { username: req.cookies["username"] };
-  res.render('404', templateVars);
-});
-
-app.post("*", (req,res) => {
-  const templateVars = { username: req.cookies["username"] };
-  res.render('404', templateVars);
-});
-
-
 // URLS JSON String -- Maybe delete at the end
 app.get("/urls.json", (req, res) => {
   res.json(urlDatabase);
 });
-
-
 
 // POSTS
 // Handles posts to /urls (for example: from /urls_new)
@@ -126,4 +130,32 @@ app.post("/login", (req,res) => {
 app.post("/logout", (req,res) => {
   res.clearCookie('username');
   res.redirect('/urls');
+});
+
+// Handles registration form data
+app.post("/register", (req,res) => {
+  let randomID = generateRandomString();
+  const inputEmail = req.body.email; // Assign to parameters for readability.
+  const inputPassword = req.body.password;
+  users[randomID] = {
+    id: randomID,
+    email: inputEmail,
+    password: inputPassword
+  };
+  
+  res.cookie('user_id', randomID);
+  
+  res.redirect('/urls');
+});
+
+
+// 404 Error
+app.get("*", (req,res) => {
+  const templateVars = { user: users[req.cookies['user_id']] };
+  res.render('404', templateVars);
+});
+
+app.post("*", (req,res) => {
+  const templateVars = { user: users[req.cookies['user_id']] };
+  res.render('404', templateVars);
 });
