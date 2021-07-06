@@ -67,10 +67,19 @@ app.get("/u/:shortURL", (req, res) => {
   res.redirect(longURL);
 });
 
-// URLS JSON String
+// 404 Error
+app.get("*", (req,res) => {
+  const templateVars = { username: req.cookies["username"] };
+  res.render('404', templateVars);
+});
+
+
+// URLS JSON String -- Maybe delete at the end
 app.get("/urls.json", (req, res) => {
   res.json(urlDatabase);
 });
+
+
 
 // POSTS
 // Handles posts to /urls (for example: from /urls_new)
