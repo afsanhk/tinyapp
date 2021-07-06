@@ -120,7 +120,8 @@ app.post("/urls/:shortURL/delete", (req,res) => {
   res.redirect('/urls');
 });
 
-// Handles logins to the app, set a cookie and re-direct to /urls
+// Handles logins to the app, set a cookie and re-direct to /urls --> 
+// Should be changed in the future
 app.post("/login", (req,res) => {
   res.cookie('username',req.body.username);
   res.redirect('/urls');
@@ -128,7 +129,7 @@ app.post("/login", (req,res) => {
 
 // Handles logouts from the app, delets a cookie and re-direct to /urls
 app.post("/logout", (req,res) => {
-  res.clearCookie('username');
+  res.clearCookie('user_id');
   res.redirect('/urls');
 });
 
