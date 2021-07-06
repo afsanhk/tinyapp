@@ -101,3 +101,9 @@ app.post("/login", (req,res) => {
   res.cookie('username',req.body.username);
   res.redirect('/urls');
 });
+
+// Handles logouts from the app, delets a cookie and re-direct to /urls
+app.post("/logout", (req,res) => {
+  res.clearCookie('username');
+  res.redirect('/urls');
+});
