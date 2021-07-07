@@ -32,6 +32,17 @@ const authenticateEmail = function (authEmail, userObj) {
   }
 };
 
+// Return user ID by email (email as string, userDB)
+const getUserID = function (checkEmail, userObj) {
+  for (let key in userObj) {
+    if (userObj.hasOwnProperty(key)) {
+      if (checkEmail === userObj[key]['email']) {
+        return key;
+      }
+    }
+  }
+}
+
 // "Databases" 
 // URL Database
 const urlDatabase = {
@@ -138,11 +149,25 @@ app.post("/urls/:shortURL/delete", (req,res) => {
   res.redirect('/urls');
 });
 
-// Handles logins to the app, set a cookie and re-direct to /urls --> 
-// Should be changed in the future
+// Handles logins to the app
 app.post("/login", (req,res) => {
-  res.cookie('username',req.body.username);
-  res.redirect('/urls');
+  let loginEmail = req.body.email;
+  let loginPassword = req.body.password;
+
+  if(authenticateEmail(loginEmail,users)) {
+    const userID = getUserID(loginEmail, users);
+    if(loginPassword === users[userID]['password']) {
+      res.cookie('user_id', userID);
+      res.redirect('/urls');
+    } else {
+      res.statusCode = 403;
+      res.send(`Password does not match the records for ${loginEmail}. Please try another password.`)
+    }
+  } else {
+    res.statusCode = 403;
+    res.send(`${loginEmail} can not be found. Please register or try another e-mail.`)
+  }
+  
 });
 
 // Handles logouts from the app, delets a cookie and re-direct to /urls

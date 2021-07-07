@@ -17,22 +17,11 @@
       <% if (user) { %>
       <div>
         <span>Logged In As: <%= user.email %></span>
-        <span>
-          <form class="form-inline" action="/logout" method="POST">
+        <form class="form-inline" action="/logout" method="POST">
           <button type="submit" class="btn btn-dark" >Logout</button>
-        </form>
-          
-        </span>
-         
+        </form> 
       </div>
-      <% }; %>
-      <!-- Removing Login form -->
-      <!--  else  -->
-        <!-- <form class="form-inline" action="/login" method="POST"> -->
-          <!-- <input class="form-control" type="text" name="username" placeholder="Username" style="width:  200px"> -->
-          <!-- <button type="submit" class="btn btn-primary" >Login</button> -->
-        <!-- </form> -->
-     
+      <% }; %>     
     </div>
 
   </nav>
