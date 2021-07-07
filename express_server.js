@@ -64,7 +64,6 @@ app.get("/urls", (req, res) => {
 // Create new urls
 app.get("/urls_new", (req,res) => {
   const templateVars = { user: users[req.cookies['user_id']] };
-  console.log(templateVars);
   res.render("urls_new", templateVars);
 });
 
@@ -153,10 +152,12 @@ app.post("/register", (req,res) => {
 // 404 Error
 app.get("*", (req,res) => {
   const templateVars = { user: users[req.cookies['user_id']] };
+  res.statusCode = 404;
   res.render('404', templateVars);
 });
 
 app.post("*", (req,res) => {
   const templateVars = { user: users[req.cookies['user_id']] };
+  res.statusCode = 404;
   res.render('404', templateVars);
 });
