@@ -74,6 +74,12 @@ app.get("/urls", (req, res) => {
   res.render("urls_index", templateVars);
 });
 
+// Login page
+app.get("/login", (req, res) => {
+  const templateVars = { user: users[req.cookies['user_id']] };
+  res.render("login", templateVars);
+})
+
 // Create new urls
 app.get("/urls_new", (req,res) => {
   const templateVars = { user: users[req.cookies['user_id']] };
@@ -167,8 +173,6 @@ app.post("/register", (req,res) => {
     res.cookie('user_id', randomID);
     res.redirect('/urls');
   }
-
-
 });
 
 
