@@ -3,9 +3,10 @@ const app = express();
 const PORT = 8080; // default port 8080
 
 const cookieParser = require('cookie-parser');
-app.use(cookieParser());
-
 const bodyParser = require("body-parser");
+const bcrypt = require('bcrypt');
+
+app.use(cookieParser());
 app.use(bodyParser.urlencoded({extended: true}));
 
 app.set("view engine", "ejs");
@@ -72,12 +73,12 @@ const users = {
   'userRandomID' : {
     id: 'userRandomID',
     email: 't@t.com',
-    password: '123'
+    password: bcrypt.hashSync('123',10)
   },
   "user2RandomID": {
     id: "user2RandomID",
     email: "2@2.com",
-    password: "2"
+    password: bcrypt.hashSync('2',10)
   }
 };
 
@@ -249,7 +250,7 @@ app.post("/login", (req,res) => {
 
   if (authenticateEmail(loginEmail,users)) {
     const userID = getUserID(loginEmail, users);
-    if (loginPassword === users[userID]['password']) {
+    if (bcrypt.compareSync(loginPassword,users[userID]['password'])) { //compares hashed password on the left to already hashed password on right
       res.cookie('user_id', userID);
       res.redirect('/urls');
     } else {
@@ -273,7 +274,7 @@ app.post("/logout", (req,res) => {
 app.post("/register", (req,res) => {
   let randomID = generateRandomString();
   const inputEmail = req.body.email; // Assign to parameters for readability.
-  const inputPassword = req.body.password;
+  const inputPassword = bcrypt.hashSync(req.body.password,10);// Hashed password
   
   if (!inputEmail || !inputPassword) {
     res.statusCode = 400;
