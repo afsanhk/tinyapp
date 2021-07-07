@@ -118,11 +118,12 @@ app.get("/urls_new", (req,res) => {
     const templateVars = { user: users[req.cookies['user_id']] };
     res.render("urls_new", templateVars);
   } else {
-    res.redirect("/login");
+    const templateVars = { user: users[req.cookies['user_id']] };
+    res.render("redirect_url.ejs", templateVars);
   }
 });
 
-// Regustration page
+// Registration page
 app.get("/register", (req,res) => {
   const templateVars = { user: users[req.cookies['user_id']] };
   res.render("registration", templateVars);
@@ -132,18 +133,31 @@ app.get("/register", (req,res) => {
 // Change so only person who is logged in can see this?
 app.get("/urls/:shortURL", (req,res) => {
   
-  if (urlDatabase[req.params.shortURL]) {
-    const templateVars = {
-      shortURL : req.params.shortURL,
-      longURL : urlDatabase[req.params.shortURL]['longURL'],
-      user: users[req.cookies['user_id']]
-    };
+  const userID = req.cookies['user_id'];
+  let shortURL = req.params.shortURL;
   
-    res.render('urls_show', templateVars);
+  if (userID) { // Checks login
+    if (urlDatabase[shortURL]) { // Checks if short URL exists
+      const idUrls = urlsForUser(userID);
+      if (idUrls[shortURL]) { // Cheks if short url exists for this user
+        const templateVars = {
+          shortURL : req.params.shortURL,
+          longURL : urlDatabase[req.params.shortURL]['longURL'],
+          user: users[req.cookies['user_id']]
+        };
+      
+        res.render('urls_show', templateVars);
+      } else {
+        res.send('You are not authorized to update or delete this URL.');
+      }
+    } else {
+      res.send(`Error: This short URL does not exist.`);
+    }
   } else {
-    res.send('Error: This short URL does not exist.');
+    const templateVars = { user: users[req.cookies['user_id']] };
+    res.render('redirect_url.ejs', templateVars);
   }
-  
+
 });
 
 // Redirects short URL clicks to the long links
@@ -193,7 +207,7 @@ app.post("/urls/:id", (req,res) => {
         res.redirect('/urls');
       } else {
         res.send('You are not authorized to update or delete this URL.');
-      }  
+      }
     } else {
       res.send(`Error: This short URL does not exist.`);
     }
@@ -211,7 +225,7 @@ app.post("/urls/:shortURL/delete", (req,res) => {
   
   if (userID) { // Checks login
     if (urlDatabase[shortURL]) { // Checks if short URL exists
-    const idUrls = urlsForUser(userID);
+      const idUrls = urlsForUser(userID);
       if (idUrls[shortURL]) { // Cheks if short url exists for this user
         delete urlDatabase[shortURL];
         res.redirect('/urls');
@@ -220,7 +234,7 @@ app.post("/urls/:shortURL/delete", (req,res) => {
       }
     } else {
       res.send(`Error: This short URL does not exist.`);
-    } 
+    }
   } else {
     const templateVars = { user: users[req.cookies['user_id']] };
     res.render('redirect_url.ejs', templateVars);
