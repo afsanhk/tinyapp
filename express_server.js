@@ -1,3 +1,4 @@
+const {getUserID} = require('./helpers')
 const express = require("express");
 const app = express();
 const PORT = 8080; // default port 8080
@@ -38,16 +39,6 @@ const authenticateEmail = function(authEmail, userObj) {
   }
 };
 
-// Return user ID by email (email as string, userDB)
-const getUserID = function(checkEmail, userObj) {
-  for (let key in userObj) {
-    if (userObj.hasOwnProperty(key)) {
-      if (checkEmail === userObj[key]['email']) {
-        return key;
-      }
-    }
-  }
-};
 
 // Returns URLs for userID
 const urlsForUser = function(id) {
