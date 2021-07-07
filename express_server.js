@@ -4,7 +4,7 @@ const PORT = 8080; // default port 8080
 
 const bodyParser = require("body-parser");
 const bcrypt = require('bcrypt');
-const cookieSession = require('cookie-session')
+const cookieSession = require('cookie-session');
 
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(cookieSession({
@@ -12,7 +12,7 @@ app.use(cookieSession({
   keys: ['key1'],
   // Cookie Options
   maxAge: 24 * 60 * 60 * 1000 // 24 hours
-}))
+}));
 
 app.set("view engine", "ejs");
 
