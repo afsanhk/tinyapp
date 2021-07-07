@@ -22,7 +22,7 @@ const generateRandomString = function() {
 };
 
 // Check userDB for existingEmail (email as string, userDB)
-const authenticateEmail = function (authEmail, userObj) {
+const authenticateEmail = function(authEmail, userObj) {
   for (let key in userObj) {
     if (userObj.hasOwnProperty(key)) {
       if (authEmail === userObj[key]['email']) {
@@ -33,7 +33,7 @@ const authenticateEmail = function (authEmail, userObj) {
 };
 
 // Return user ID by email (email as string, userDB)
-const getUserID = function (checkEmail, userObj) {
+const getUserID = function(checkEmail, userObj) {
   for (let key in userObj) {
     if (userObj.hasOwnProperty(key)) {
       if (checkEmail === userObj[key]['email']) {
@@ -41,9 +41,9 @@ const getUserID = function (checkEmail, userObj) {
       }
     }
   }
-}
+};
 
-// "Databases" 
+// "Databases"
 // URL Database
 const urlDatabase = {
   "b2xVn2": "http://www.lighthouselabs.ca",
@@ -54,8 +54,8 @@ const urlDatabase = {
 const users = {
   'userRandomID' : {
     id: 'userRandomID',
-    email: 'user@example.com',
-    password: 'purple-monkey-dinosaur'
+    email: 't@t.com',
+    password: '123'
   },
   "user2RandomID": {
     id: "user2RandomID",
@@ -76,7 +76,7 @@ app.get("/", (req, res) => {
 
 // Lists urls
 app.get("/urls", (req, res) => {
- 
+
   const templateVars = {
     urls: urlDatabase,
     user: users[req.cookies['user_id']]
@@ -89,13 +89,19 @@ app.get("/urls", (req, res) => {
 app.get("/login", (req, res) => {
   const templateVars = { user: users[req.cookies['user_id']] };
   res.render("login", templateVars);
-})
+});
 
 // Create new urls
 app.get("/urls_new", (req,res) => {
-  const templateVars = { user: users[req.cookies['user_id']] };
-  res.render("urls_new", templateVars);
+  if (req.cookies['user_id']) {
+    const templateVars = { user: users[req.cookies['user_id']] };
+    res.render("urls_new", templateVars);
+  } else {
+    res.redirect("/login");
+  }
 });
+
+
 
 // Regustration page
 app.get("/register", (req,res) => {
@@ -128,11 +134,16 @@ app.get("/urls.json", (req, res) => {
 // POSTS
 // Handles posts to /urls (for example: from /urls_new)
 app.post("/urls", (req, res) => {
-  console.log(req.body);  // Log the POST request body to the console
-  const newShortURL = generateRandomString(); // Generates 6 char string
-  urlDatabase[newShortURL] = req.body.longURL; // New key:value -- short:long
   
-  res.redirect(`/urls/${newShortURL}`); // Redirects to /urls with the new string.
+  if (req.cookies['user_id']) {
+    console.log(req.body);  // Log the POST request body to the console
+    const newShortURL = generateRandomString(); // Generates 6 char string
+    urlDatabase[newShortURL] = req.body.longURL; // New key:value -- short:long
+    res.redirect(`/urls/${newShortURL}`); // Redirects to /urls with the new string.
+  } else {
+    res.send("Please ensure you are logged in!");
+  }
+  
 });
 
 // Updates a URL resource; POST/urls/:id
@@ -154,18 +165,18 @@ app.post("/login", (req,res) => {
   let loginEmail = req.body.email;
   let loginPassword = req.body.password;
 
-  if(authenticateEmail(loginEmail,users)) {
+  if (authenticateEmail(loginEmail,users)) {
     const userID = getUserID(loginEmail, users);
-    if(loginPassword === users[userID]['password']) {
+    if (loginPassword === users[userID]['password']) {
       res.cookie('user_id', userID);
       res.redirect('/urls');
     } else {
       res.statusCode = 403;
-      res.send(`Password does not match the records for ${loginEmail}. Please try another password.`)
+      res.send(`Password does not match the records for ${loginEmail}. Please try another password.`);
     }
   } else {
     res.statusCode = 403;
-    res.send(`${loginEmail} can not be found. Please register or try another e-mail.`)
+    res.send(`${loginEmail} can not be found. Please register or try another e-mail.`);
   }
   
 });
@@ -182,9 +193,9 @@ app.post("/register", (req,res) => {
   const inputEmail = req.body.email; // Assign to parameters for readability.
   const inputPassword = req.body.password;
   
-  if(!inputEmail || !inputPassword) {
+  if (!inputEmail || !inputPassword) {
     res.statusCode = 400;
-    res.send('Please ensure you have entered both an e-mail and password.')
+    res.send('Please ensure you have entered both an e-mail and password.');
   } else if (authenticateEmail(inputEmail,users)) {
     res.statusCode = 400;
     res.send(`${inputEmail} has already been used to register. Please use another e-mail address.`);
@@ -204,12 +215,10 @@ app.post("/register", (req,res) => {
 // 404 Error
 app.get("*", (req,res) => {
   const templateVars = { user: users[req.cookies['user_id']] };
-  res.statusCode = 404;
-  res.render('404', templateVars);
+  res.status(404).render('404', templateVars);
 });
 
 app.post("*", (req,res) => {
   const templateVars = { user: users[req.cookies['user_id']] };
-  res.statusCode = 404;
-  res.render('404', templateVars);
+  res.status(404).render('404', templateVars);
 });
