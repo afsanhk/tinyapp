@@ -10,6 +10,7 @@ app.use(bodyParser.urlencoded({extended: true}));
 
 app.set("view engine", "ejs");
 
+// Helper Functions
 // Generates random 6 length string
 const generateRandomString = function() {
   let characters = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
@@ -20,6 +21,18 @@ const generateRandomString = function() {
   return randomString; // Edge case: Improbably but this doesn't account for if string has already been generated for another URL.
 };
 
+// Check userDB for existingEmail (email as string, userDB)
+const authenticateEmail = function (authEmail, userObj) {
+  for (let key in userObj) {
+    if (userObj.hasOwnProperty(key)) {
+      if (authEmail === userObj[key]['email']) {
+        return true;
+      }
+    }
+  }
+};
+
+// "Databases" 
 // URL Database
 const urlDatabase = {
   "b2xVn2": "http://www.lighthouselabs.ca",
@@ -137,15 +150,25 @@ app.post("/register", (req,res) => {
   let randomID = generateRandomString();
   const inputEmail = req.body.email; // Assign to parameters for readability.
   const inputPassword = req.body.password;
-  users[randomID] = {
-    id: randomID,
-    email: inputEmail,
-    password: inputPassword
-  };
   
-  res.cookie('user_id', randomID);
-  
-  res.redirect('/urls');
+  if(!inputEmail || !inputPassword) {
+    res.statusCode = 400;
+    res.send('Please ensure you have entered both an e-mail and password.')
+  } else if (authenticateEmail(inputEmail,users)) {
+    res.statusCode = 400;
+    res.send(`${inputEmail} has already been used to register. Please use another e-mail address.`);
+  } else {
+    users[randomID] = {
+      id: randomID,
+      email: inputEmail,
+      password: inputPassword
+    };
+    console.log(users);
+    res.cookie('user_id', randomID);
+    res.redirect('/urls');
+  }
+
+
 });
 
 
