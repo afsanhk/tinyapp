@@ -28,11 +28,13 @@ app.listen(PORT, () => {
 const urlDatabase = {
   "b2xVn2" : {
     longURL: "http://www.lighthouselabs.ca",
-    userID: "userRandomID"
+    userID: "userRandomID",
+    visits: 0
   },
   "9sm5xK" : {
     longURL: "http://www.google.com",
-    userID: "user2RandomID"
+    userID: "user2RandomID",
+    visits: 0
   }
 };
 
@@ -131,8 +133,9 @@ app.get("/urls/:shortURL", (req,res) => {
       if (idUrls[shortURL]) { // Cheks if short url belongs to this user
         const templateVars = {
           shortURL,
-          longURL : urlDatabase[req.params.shortURL]['longURL'],
-          user: users[userID]
+          longURL : urlDatabase[shortURL]['longURL'],
+          user: users[userID],
+          visits: urlDatabase[shortURL]['visits']
         };
         res.render('urls_show', templateVars);
       } else {
@@ -154,6 +157,8 @@ app.get("/u/:shortURL", (req, res) => {
 
   if (urlDatabase[shortURL]) { // Check if short URL exists
     const longURL = urlDatabase[shortURL]['longURL'];
+    urlDatabase[shortURL]['visits'] += 1;
+    console.log(urlDatabase[shortURL]['visits']);
     res.redirect(longURL);
   } else {
     res.send(`Error: This short URL does not exist.`);
