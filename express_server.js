@@ -157,8 +157,7 @@ app.get("/u/:shortURL", (req, res) => {
 
   if (urlDatabase[shortURL]) { // Check if short URL exists
     const longURL = urlDatabase[shortURL]['longURL'];
-    urlDatabase[shortURL]['visits'] += 1;
-    console.log(urlDatabase[shortURL]['visits']);
+    urlDatabase[shortURL]['visits'] += 1; // Counts visits to short URL
     res.redirect(longURL);
   } else {
     res.send(`Error: This short URL does not exist.`);
@@ -173,7 +172,7 @@ app.post("/urls", (req, res) => {
 
   if (userID) { // Check login
     const newShortURL = generateRandomString(); // Generates 6 char string
-    urlDatabase[newShortURL] = {longURL:'', userID};
+    urlDatabase[newShortURL] = {longURL:'', userID, visits: 0};
     urlDatabase[newShortURL]['longURL'] = req.body.longURL; // New key:value -- short:long
     res.redirect(`/urls/${newShortURL}`); // Redirects to /urls with the new string.
   } else {
