@@ -1,4 +1,4 @@
-const {getUserID} = require('./helpers')
+const {getUserID, generateRandomString, authenticateEmail, urlsForUser} = require('./helpers')
 const express = require("express");
 const app = express();
 const PORT = 8080; // default port 8080
@@ -16,40 +16,6 @@ app.use(cookieSession({
 }));
 
 app.set("view engine", "ejs");
-
-// Helper Functions
-// Generates random 6 length string
-const generateRandomString = function() {
-  let characters = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
-  let randomString = '';
-  for (let i = 0; i < 6; i++) {
-    randomString += characters[Math.floor(Math.random() * characters.length)];
-  }
-  return randomString; // Edge case: Improbably but this doesn't account for if string has already been generated for another URL.
-};
-
-// Check userDB for existingEmail (email as string, userDB)
-const authenticateEmail = function(authEmail, userObj) {
-  for (let key in userObj) {
-    if (userObj.hasOwnProperty(key)) {
-      if (authEmail === userObj[key]['email']) {
-        return true;
-      }
-    }
-  }
-};
-
-
-// Returns URLs for userID
-const urlsForUser = function(id) {
-  let output = {};
-  for (let key in urlDatabase) {
-    if (urlDatabase[key]['userID'] === id) {
-      output[key] = urlDatabase[key]['longURL'];
-    }
-  }
-  return output;
-};
 
 // "Databases"
 // URL Database
@@ -92,7 +58,7 @@ app.get("/", (req, res) => {
 app.get("/urls", (req, res) => {
   if (req.session.user_id) {
     const templateVars = {
-      urls: urlsForUser(req.session.user_id),
+      urls: urlsForUser(req.session.user_id,urlDatabase),
       user: users[req.session.user_id]
     };
     res.render("urls_index", templateVars);
@@ -135,7 +101,7 @@ app.get("/urls/:shortURL", (req,res) => {
   
   if (userID) { // Checks login
     if (urlDatabase[shortURL]) { // Checks if short URL exists
-      const idUrls = urlsForUser(userID);
+      const idUrls = urlsForUser(userID,urlDatabase);
       if (idUrls[shortURL]) { // Cheks if short url exists for this user
         const templateVars = {
           shortURL : req.params.shortURL,
@@ -198,7 +164,7 @@ app.post("/urls/:id", (req,res) => {
 
   if (userID) { // Checks login
     if (urlDatabase[id]) { // Checks if short URL exists
-      const idUrls = urlsForUser(userID);
+      const idUrls = urlsForUser(userID,urlDatabase);
       if (idUrls[id]) { // Checks if short URL exists for this user
         urlDatabase[id]['longURL'] = req.body.newLongURL;
         res.redirect('/urls');
@@ -222,7 +188,7 @@ app.post("/urls/:shortURL/delete", (req,res) => {
   
   if (userID) { // Checks login
     if (urlDatabase[shortURL]) { // Checks if short URL exists
-      const idUrls = urlsForUser(userID);
+      const idUrls = urlsForUser(userID,urlDatabase);
       if (idUrls[shortURL]) { // Cheks if short url exists for this user
         delete urlDatabase[shortURL];
         res.redirect('/urls');
