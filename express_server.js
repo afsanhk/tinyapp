@@ -3,15 +3,17 @@ const {getUserID, generateRandomString, authenticateEmail, urlsForUser} = requir
 const express = require("express");
 const app = express();
 const PORT = 8080; // default port 8080
-
+const methodOverride = require('method-override');
 const bodyParser = require("body-parser");
 const bcrypt = require('bcrypt');
 const cookieSession = require('cookie-session');
 
+// override with POST having ?_method=DELETE or ?_method=PUT
+app.use(methodOverride('_method'))
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(cookieSession({
   name: 'session',
-  keys: ['key1'],
+  keys: ['someRandomKeyWooooo'],
   maxAge: 24 * 60 * 60 * 1000 // 24 hours
 }));
 
@@ -200,7 +202,7 @@ app.post("/urls/:id", (req,res) => {
 });
 
 // Deletes urls from the form on /urls
-app.post("/urls/:shortURL/delete", (req,res) => {
+app.delete("/urls/:shortURL/delete", (req,res) => {
   
   const userID = req.session.user_id;
   const shortURL = req.params.shortURL;
