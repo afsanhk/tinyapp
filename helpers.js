@@ -31,7 +31,7 @@ const authenticateEmail = function(authEmail, userObj) {
   }
 };
 
-// Returns URLs for userID
+// Returns URLs for userID --> filtered URL object for user in dateVisitInfoForUser
 const urlsForUser = function(id, userObj) {
   let output = {};
   for (let key in userObj) {
@@ -42,4 +42,24 @@ const urlsForUser = function(id, userObj) {
   return output;
 };
 
-module.exports = {getUserID, generateRandomString, authenticateEmail, urlsForUser};
+// Returns creation date, total visits and unique visitors for userID
+const dateVisitInfoForUser = function(filteredUrlObject, urlDB) {
+  const output = {};
+
+  for (let key in filteredUrlObject) {
+    for (let shortURL in urlDB) {
+      if (key === shortURL) {
+        output[key] = {
+          created: urlDB[key]['created'],
+          visits: urlDB[key]['visits'],
+          visitors: urlDB[key]['visitors']
+        };
+      }
+    }
+  }
+
+  return output;
+};
+
+
+module.exports = {getUserID, generateRandomString, authenticateEmail, urlsForUser, dateVisitInfoForUser};

@@ -1,5 +1,5 @@
 // Requiring external functions, packages and modules
-const {getUserID, generateRandomString, authenticateEmail, urlsForUser} = require('./helpers');
+const {getUserID, generateRandomString, authenticateEmail, urlsForUser, dateVisitInfoForUser} = require('./helpers');
 const express = require("express");
 const app = express();
 const PORT = 8080; // default port 8080
@@ -10,7 +10,11 @@ const cookieSession = require('cookie-session');
 
 // override with POST having ?_method=DELETE or ?_method=PUT
 app.use(methodOverride('_method'));
+
+// use body parser
 app.use(bodyParser.urlencoded({extended: true}));
+
+// user cookie parser
 app.use(cookieSession({
   name: 'session',
   keys: ['someRandomKeyWooooo'],
@@ -29,6 +33,7 @@ const urlDatabase = {
   "b2xVn2" : {
     longURL: "http://www.lighthouselabs.ca",
     userID: "userRandomID",
+    created: new Date(),
     visits: 0,
     visitors: [],
     allVisits: {}
@@ -37,6 +42,7 @@ const urlDatabase = {
     longURL: "http://www.google.com",
     userID: "user2RandomID",
     visits: 0,
+    created: new Date(),
     visitors: [],
     allVisits: {}
   }
@@ -73,11 +79,15 @@ app.get("/", (req, res) => {
 app.get("/urls", (req, res) => {
   
   const userID = req.session.user_id;
-  
+  const urlsForUserID = urlsForUser(userID,urlDatabase);
+
+  const stretchInfo = dateVisitInfoForUser(urlsForUserID,urlDatabase);
+
   if (userID) {
     const templateVars = {
-      urls: urlsForUser(userID,urlDatabase),
-      user: users[userID]
+      urls: urlsForUserID,
+      user: users[userID],
+      stretchInfo
     };
     res.render("urls_index", templateVars);
   } else {
@@ -139,6 +149,7 @@ app.get("/urls/:shortURL", (req,res) => {
           shortURL,
           longURL : urlDatabase[shortURL]['longURL'],
           user: users[userID],
+          created: urlDatabase[shortURL]['created'],
           visits: urlDatabase[shortURL]['visits'],
           visitors: urlDatabase[shortURL]['visitors'].length,
           allVisits: urlDatabase[shortURL]['allVisits']
@@ -185,7 +196,7 @@ app.post("/urls", (req, res) => {
 
   if (userID) { // Check login
     const newShortURL = generateRandomString(); // Generates 6 char string
-    urlDatabase[newShortURL] = {longURL:'', userID, visits: 0, visitors: [], allVisits:{}};
+    urlDatabase[newShortURL] = {longURL:'', userID, created: new Date(), visits: 0, visitors: [], allVisits:{}};
     urlDatabase[newShortURL]['longURL'] = req.body.longURL; // New key:value -- short:long
     res.redirect(`/urls/${newShortURL}`); // Redirects to /urls with the new string.
   } else {
