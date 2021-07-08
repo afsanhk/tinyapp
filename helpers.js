@@ -42,4 +42,4 @@ const urlsForUser = function(id, userObj) {
   return output;
 };
 
-module.exports = {getUserID, generateRandomString, authenticateEmail, urlsForUser}
+module.exports = {getUserID, generateRandomString, authenticateEmail, urlsForUser};
