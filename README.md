@@ -27,8 +27,9 @@ This was built as part of the required coursework for the Lighthouse Labs Web De
 - bcrypt
 - body-parser
 - cookie-session
+- method-override 
 
 ## Getting Started
 
 - Install all dependencies (using the `npm install` command).
-- Run the development web server using the `node express_server.js` command.
+- Run the development web server using the `node express_server.js or npm start` commands.
