@@ -5,7 +5,7 @@ This was built as part of the required coursework for the Lighthouse Labs Web De
 
 ## Final Product
 
-!["URLs Page"](https://github.com/afsanhk/tinyapp/blob/master/docs/urlsIndexTinyApp.png?raw=true)
+!["URLs Page"](https://github.com/afsanhk/tinyapp/blob/master/docs/showIndexStretchTinyApp.png?raw=true)
 
 !["Create New URL"](https://github.com/afsanhk/tinyapp/blob/master/docs/newUrlsTinyApp.png?raw=true)
 
