@@ -9,7 +9,7 @@ const bcrypt = require('bcrypt');
 const cookieSession = require('cookie-session');
 
 // override with POST having ?_method=DELETE or ?_method=PUT
-app.use(methodOverride('_method'))
+app.use(methodOverride('_method'));
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(cookieSession({
   name: 'session',
@@ -54,7 +54,7 @@ const users = {
 // Home Page
 app.get("/", (req, res) => {
   
-  const userID = req.session.user_id
+  const userID = req.session.user_id;
   
   if (userID) {
     res.redirect("/urls");
@@ -66,7 +66,7 @@ app.get("/", (req, res) => {
 // URL List
 app.get("/urls", (req, res) => {
   
-  const userID = req.session.user_id
+  const userID = req.session.user_id;
   
   if (userID) {
     const templateVars = {
@@ -83,7 +83,7 @@ app.get("/urls", (req, res) => {
 // Login page
 app.get("/login", (req, res) => {
   
-  const userID = req.session.user_id
+  const userID = req.session.user_id;
 
   if (userID) {
     res.redirect("/urls");
@@ -96,7 +96,7 @@ app.get("/login", (req, res) => {
 // Create new urls
 app.get("/urls/new", (req,res) => {
   
-  const userID = req.session.user_id
+  const userID = req.session.user_id;
 
   if (userID) {
     const templateVars = { user: users[userID] };
@@ -109,7 +109,7 @@ app.get("/urls/new", (req,res) => {
 // Registration page
 app.get("/register", (req,res) => {
   
-  const userID = req.session.user_id
+  const userID = req.session.user_id;
 
   if (userID) {
     res.redirect("/urls");
@@ -133,7 +133,7 @@ app.get("/urls/:shortURL", (req,res) => {
           shortURL,
           longURL : urlDatabase[req.params.shortURL]['longURL'],
           user: users[userID]
-        };     
+        };
         res.render('urls_show', templateVars);
       } else {
         res.send('You are not authorized to update or delete this URL.');
@@ -172,54 +172,6 @@ app.post("/urls", (req, res) => {
     urlDatabase[newShortURL]['longURL'] = req.body.longURL; // New key:value -- short:long
     res.redirect(`/urls/${newShortURL}`); // Redirects to /urls with the new string.
   } else {
-    const templateVars = { user: users[userID] };
-    res.render('redirect_url.ejs', templateVars);
-  }
-});
-
-// Updates a URL resource; POST/urls/:id
-app.post("/urls/:id", (req,res) => {
-
-  const userID = req.session.user_id;
-  const id = req.params.id;
-
-  if (userID) { // Checks login
-    if (urlDatabase[id]) { // Checks if short URL exists
-      const idUrls = urlsForUser(userID,urlDatabase); // Returns object with short:long url pairs for user
-      if (idUrls[id]) { // Checks if short URL exists for this user
-        urlDatabase[id]['longURL'] = req.body.newLongURL;
-        res.redirect('/urls');
-      } else { // URL belongs to another account
-        res.send('You are not authorized to update or delete this URL.');
-      }
-    } else { // URL not created
-      res.send(`Error: This short URL does not exist.`);
-    }
-  } else { // Not logged in
-    const templateVars = { user: users[userID] };
-    res.render('redirect_url.ejs', templateVars);
-  }
-});
-
-// Deletes urls from the form on /urls
-app.delete("/urls/:shortURL/delete", (req,res) => {
-  
-  const userID = req.session.user_id;
-  const shortURL = req.params.shortURL;
-  
-  if (userID) { // Checks login
-    if (urlDatabase[shortURL]) { // Checks if short URL exists
-      const idUrls = urlsForUser(userID,urlDatabase); // Returns object with short:long url pairs for user
-      if (idUrls[shortURL]) { // Cheks if short url exists for this user
-        delete urlDatabase[shortURL];
-        res.redirect('/urls');
-      } else { // URL belongs to another account
-        res.send('You are not authorized to update or delete this URL.');
-      }
-    } else { // URL not created
-      res.send(`Error: This short URL does not exist.`);
-    }
-  } else { // Not logged in
     const templateVars = { user: users[userID] };
     res.render('redirect_url.ejs', templateVars);
   }
@@ -271,6 +223,57 @@ app.post("/register", (req,res) => {
     res.redirect('/urls');
   }
 });
+
+// PUTS
+// Updates a URL resource in a collection; POST/urls/:id
+app.put("/urls/:id", (req,res) => {
+
+  const userID = req.session.user_id;
+  const id = req.params.id;
+
+  if (userID) { // Checks login
+    if (urlDatabase[id]) { // Checks if short URL exists
+      const idUrls = urlsForUser(userID,urlDatabase); // Returns object with short:long url pairs for user
+      if (idUrls[id]) { // Checks if short URL exists for this user
+        urlDatabase[id]['longURL'] = req.body.newLongURL;
+        res.redirect('/urls');
+      } else { // URL belongs to another account
+        res.send('You are not authorized to update or delete this URL.');
+      }
+    } else { // URL not created
+      res.send(`Error: This short URL does not exist.`);
+    }
+  } else { // Not logged in
+    const templateVars = { user: users[userID] };
+    res.render('redirect_url.ejs', templateVars);
+  }
+});
+
+// DELETES
+// Deletes urls from the form on /urls
+app.delete("/urls/:shortURL/delete", (req,res) => {
+  
+  const userID = req.session.user_id;
+  const shortURL = req.params.shortURL;
+  
+  if (userID) { // Checks login
+    if (urlDatabase[shortURL]) { // Checks if short URL exists
+      const idUrls = urlsForUser(userID,urlDatabase); // Returns object with short:long url pairs for user
+      if (idUrls[shortURL]) { // Cheks if short url exists for this user
+        delete urlDatabase[shortURL];
+        res.redirect('/urls');
+      } else { // URL belongs to another account
+        res.send('You are not authorized to update or delete this URL.');
+      }
+    } else { // URL not created
+      res.send(`Error: This short URL does not exist.`);
+    }
+  } else { // Not logged in
+    const templateVars = { user: users[userID] };
+    res.render('redirect_url.ejs', templateVars);
+  }
+});
+
 
 // 404 Errors
 app.get("*", (req,res) => {
