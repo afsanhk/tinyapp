@@ -30,13 +30,15 @@ const urlDatabase = {
     longURL: "http://www.lighthouselabs.ca",
     userID: "userRandomID",
     visits: 0,
-    visitors: []
+    visitors: [],
+    allVisits: {}
   },
   "9sm5xK" : {
     longURL: "http://www.google.com",
     userID: "user2RandomID",
     visits: 0,
-    visitors: []
+    visitors: [],
+    allVisits: {}
   }
 };
 
@@ -138,7 +140,8 @@ app.get("/urls/:shortURL", (req,res) => {
           longURL : urlDatabase[shortURL]['longURL'],
           user: users[userID],
           visits: urlDatabase[shortURL]['visits'],
-          visitors: urlDatabase[shortURL]['visitors'].length
+          visitors: urlDatabase[shortURL]['visitors'].length,
+          allVisits: urlDatabase[shortURL]['allVisits']
         };
         res.render('urls_show', templateVars);
       } else {
@@ -165,6 +168,9 @@ app.get("/u/:shortURL", (req, res) => {
       urlDatabase[shortURL]['visitors'].push(visitorID);
     }
     urlDatabase[shortURL]['visits'] += 1; // Counts visits to short URL
+    const randomlyGeneratedVisitorId = generateRandomString();
+    const timeStamp = new Date();
+    urlDatabase[shortURL]['allVisits'][randomlyGeneratedVisitorId] = timeStamp; //Populates object 
     res.redirect(longURL);
   } else {
     res.send(`Error: This short URL does not exist.`);
@@ -179,7 +185,7 @@ app.post("/urls", (req, res) => {
 
   if (userID) { // Check login
     const newShortURL = generateRandomString(); // Generates 6 char string
-    urlDatabase[newShortURL] = {longURL:'', userID, visits: 0, visitors: []};
+    urlDatabase[newShortURL] = {longURL:'', userID, visits: 0, visitors: [], allVisits:{}};
     urlDatabase[newShortURL]['longURL'] = req.body.longURL; // New key:value -- short:long
     res.redirect(`/urls/${newShortURL}`); // Redirects to /urls with the new string.
   } else {
