@@ -51,7 +51,11 @@ app.listen(PORT, () => {
 // GETS
 // Home Page
 app.get("/", (req, res) => {
-  res.send("Hello!");
+  if (req.session.user_id) {
+    res.redirect("/urls");
+  } else {
+    res.redirect("/login");
+  }
 });
 
 // Lists urls
@@ -71,28 +75,35 @@ app.get("/urls", (req, res) => {
 
 // Login page
 app.get("/login", (req, res) => {
-  const templateVars = { user: users[req.session.user_id] };
-  res.render("login", templateVars);
+  if (req.session.user_id) {
+    res.redirect("/urls")
+  } else {
+    const templateVars = { user: users[req.session.user_id] };
+    res.render("login", templateVars);
+  }  
 });
 
 // Create new urls
-app.get("/urls_new", (req,res) => {
+app.get("/urls/new", (req,res) => {
   if (req.session.user_id) {
     const templateVars = { user: users[req.session.user_id] };
     res.render("urls_new", templateVars);
   } else {
-    const templateVars = { user: users[req.session.user_id] };
-    res.render("redirect_url.ejs", templateVars);
+    res.redirect("/login");
   }
 });
 
 // Registration page
 app.get("/register", (req,res) => {
-  const templateVars = { user: users[req.session.user_id] };
-  res.render("registration", templateVars);
+  if (req.session.user_id) {
+    res.redirect("/urls")
+  } else {
+    const templateVars = { user: users[req.session.user_id] };
+    res.render("registration", templateVars);
+  }
 });
 
-// Shows corresponding long URL --> Make sure this is after urls_new.
+// Shows corresponding long URL --> Make sure this is after urls/new.
 // Change so only person who is logged in can see this?
 app.get("/urls/:shortURL", (req,res) => {
   
@@ -144,7 +155,6 @@ app.get("/urls.json", (req, res) => {
 app.post("/urls", (req, res) => {
   
   if (req.session.user_id) {
-    console.log(req.body);  // Log the POST request body to the console
     const newShortURL = generateRandomString(); // Generates 6 char string
     urlDatabase[newShortURL] = {longURL:'', userID: req.session.user_id};
     urlDatabase[newShortURL]['longURL'] = req.body.longURL; // New key:value -- short:long
@@ -210,18 +220,16 @@ app.post("/login", (req,res) => {
   let loginEmail = req.body.email;
   let loginPassword = req.body.password;
 
-  if (authenticateEmail(loginEmail,users)) {
+  if (authenticateEmail(loginEmail,users)) { // Check e-mail
     const userID = getUserID(loginEmail, users);
-    if (bcrypt.compareSync(loginPassword,users[userID]['password'])) { //compares hashed password on the left to already hashed password on right
+    if (bcrypt.compareSync(loginPassword,users[userID]['password'])) { // Check hashed password 
       req.session.user_id = userID;
       res.redirect('/urls');
-    } else {
-      res.statusCode = 403;
-      res.send(`Password does not match the records for ${loginEmail}. Please try another password.`);
+    } else { // Password no bueno
+      res.status(403).send(`Password does not match the records for ${loginEmail}. Please try another password.`);
     }
-  } else {
-    res.statusCode = 403;
-    res.send(`${loginEmail} can not be found. Please register or try another e-mail.`);
+  } else { // E-mail no bueno
+    res.status(403).send(`${loginEmail} can not be found. Please register or try another e-mail.`);
   }
   
 });
@@ -239,11 +247,9 @@ app.post("/register", (req,res) => {
   const inputPassword = req.body.password;// Hashed password
   
   if (!inputEmail || !inputPassword) {
-    res.statusCode = 400;
-    res.send('Please ensure you have entered both an e-mail and password.');
+    res.status(400).send('Please ensure you have entered both an e-mail and password.');
   } else if (authenticateEmail(inputEmail,users)) {
-    res.statusCode = 400;
-    res.send(`${inputEmail} has already been used to register. Please use another e-mail address.`);
+    res.status(400).send(`${inputEmail} has already been used to register. Please use another e-mail address.`);
   } else {
     users[randomID] = {
       id: randomID,
