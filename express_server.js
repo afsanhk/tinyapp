@@ -77,7 +77,6 @@ app.get("/urls", (req, res) => {
     const templateVars = { user: users[userID] };
     res.render('redirect_url.ejs', templateVars);
   }
-  
 });
 
 // Login page
