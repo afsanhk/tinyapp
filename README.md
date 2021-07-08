@@ -32,4 +32,4 @@ This was built as part of the required coursework for the Lighthouse Labs Web De
 ## Getting Started
 
 - Install all dependencies (using the `npm install` command).
-- Run the development web server using the `node express_server.js or npm start` commands.
+- Run the development web server using the `node express_server.js` commands.
