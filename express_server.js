@@ -170,7 +170,7 @@ app.get("/u/:shortURL", (req, res) => {
     urlDatabase[shortURL]['visits'] += 1; // Counts visits to short URL
     const randomlyGeneratedVisitorId = generateRandomString();
     const timeStamp = new Date();
-    urlDatabase[shortURL]['allVisits'][randomlyGeneratedVisitorId] = timeStamp; //Populates object 
+    urlDatabase[shortURL]['allVisits'][randomlyGeneratedVisitorId] = timeStamp; //Populates object
     res.redirect(longURL);
   } else {
     res.send(`Error: This short URL does not exist.`);
