@@ -9,7 +9,7 @@ This was built as part of the required coursework for the Lighthouse Labs Web De
 
 !["Create New URL"](https://github.com/afsanhk/tinyapp/blob/master/docs/newUrlsTinyApp.png?raw=true)
 
-!["URL Display Page"](https://github.com/afsanhk/tinyapp/blob/master/docs/urlsIndexStrTinyApp.png?raw=true)
+!["URL Display Page"](https://github.com/afsanhk/tinyapp/blob/master/docs/showURLsStretchTinyApp.png?raw=true)
 
 !["Login Page"](https://github.com/afsanhk/tinyapp/blob/master/docs/loginTinyApp.png?raw=true)
 
